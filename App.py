@@ -22,6 +22,8 @@ import pafy
 import plotly.express as px
 import youtube_dl
 from IPython.display import HTML
+from data_insertion import insert_user_data_mongo
+from pymongo import MongoClient
 
 def fetch_yt_video(link):
     # video = pafy.new(link)
@@ -91,7 +93,7 @@ def course_recommender(course_list):
     return rec_course
 
 
-connection = pymysql.connect(host='localhost', port=3307 ,user='root', password='')
+connection = pymysql.connect(host='sql7.freesqldatabase.com', port=3306 ,user='sql7767123', password='bybKChl2Pf')
 cursor = connection.cursor()
 
 
@@ -132,29 +134,32 @@ def run():
     # img = Image.open('./Logo/atinglelogo.png')
     # img = img.resize((250, 250))
     # st.image(img)
+    client = MongoClient("mongodb+srv://jaspinder0029:harry2299@cluster0.r18ki.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")  # Replace with your connection string
+    db = client['resumeanalyzer']  # Database name
+    collection = db['user_data']
 
     # Create the DB
-    db_sql = """CREATE DATABASE IF NOT EXISTS SRA;"""
-    cursor.execute(db_sql)
-    connection.select_db("sra")
+    # db_sql = """CREATE DATABASE IF NOT EXISTS SRA;"""
+    # cursor.execute(db_sql)
+    # connection.select_db("sra")
 
-    # Create table
-    DB_table_name = 'user_data'
-    table_sql = "CREATE TABLE IF NOT EXISTS " + DB_table_name + """
-                    (ID INT NOT NULL AUTO_INCREMENT,
-                     Name varchar(100) NOT NULL,
-                     Email_ID VARCHAR(50) NOT NULL,
-                     resume_score VARCHAR(8) NOT NULL,
-                     Timestamp VARCHAR(50) NOT NULL,
-                     Page_no VARCHAR(5) NOT NULL,
-                     Predicted_Field VARCHAR(25) NOT NULL,
-                     User_level VARCHAR(30) NOT NULL,
-                     Actual_skills VARCHAR(300) NOT NULL,
-                     Recommended_skills VARCHAR(300) NOT NULL,
-                     Recommended_courses VARCHAR(600) NOT NULL,
-                     PRIMARY KEY (ID));
-                    """
-    cursor.execute(table_sql)
+    # # Create table
+    # DB_table_name = 'user_data'
+    # table_sql = "CREATE TABLE IF NOT EXISTS " + DB_table_name + """
+    #                 (ID INT NOT NULL AUTO_INCREMENT,
+    #                  Name varchar(100) NOT NULL,
+    #                  Email_ID VARCHAR(50) NOT NULL,
+    #                  resume_score VARCHAR(8) NOT NULL,
+    #                  Timestamp VARCHAR(50) NOT NULL,
+    #                  Page_no VARCHAR(5) NOT NULL,
+    #                  Predicted_Field VARCHAR(25) NOT NULL,
+    #                  User_level VARCHAR(30) NOT NULL,
+    #                  Actual_skills VARCHAR(300) NOT NULL,
+    #                  Recommended_skills VARCHAR(300) NOT NULL,
+    #                  Recommended_courses VARCHAR(600) NOT NULL,
+    #                  PRIMARY KEY (ID));
+    #                 """
+    # cursor.execute(table_sql)
     if choice == 'Normal User':
         # st.markdown('''<h4 style='text-align: left; color: #d73b5c;'>* Upload your resume, and get smart recommendation based on it."</h4>''',
         #             unsafe_allow_html=True)
@@ -386,9 +391,18 @@ def run():
                     "** Note: This score is calculated based on the content that you have added in your Resume. **")
                 st.balloons()
 
-                insert_data(resume_data['name'], resume_data['email'], str(resume_score), timestamp,
-                            str(resume_data['no_of_pages']), reco_field, cand_level, str(resume_data['skills']),
-                            str(recommended_skills), str(rec_course))
+                # insert_data(resume_data['name'], resume_data['email'], str(resume_score), timestamp,
+                #             str(resume_data['no_of_pages']), reco_field, cand_level, str(resume_data['skills']),
+                #             str(recommended_skills), str(rec_course))
+                insert_user_data_mongo(
+    resume_data,
+    resume_score,
+    timestamp,
+    reco_field,
+    cand_level,
+    recommended_skills,
+    rec_course
+)
 
                 ## Resume writing video
                 st.header("**Bonus Video for Resume Writing Tips💡**")
