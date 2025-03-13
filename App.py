@@ -41,7 +41,11 @@ def fetch_yt_video(link):
         print(f"Error fetching video title: {e}")
         return None
 
-
+SKILLS_DB = [
+    'python', 'java', 'c++', 'sql', 'html', 'css', 'javascript',
+    'react', 'node.js', 'mongodb', 'mysql', 'excel', 'git', 'github',
+    'machine learning', 'data analysis', 'communication', 'leadership'
+]
 class MyResumeParser:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -73,6 +77,12 @@ class MyResumeParser:
         with open(self.file_path, 'rb') as f:
             reader = PyPDF2.PdfReader(f)
             return len(reader.pages)
+    
+
+    def extract_skills(self, text):
+        text = text.lower()
+        return [skill for skill in SKILLS_DB if skill in text]
+
 
     def get_extracted_data(self):
         text = self.extract_text()
@@ -87,7 +97,9 @@ class MyResumeParser:
             "name": name,
             "email": self.extract_email(text),
             "phone": self.extract_phone(text),
-            "raw_text": text
+            "raw_text": text,
+            "skills": self.extract_skills(text) 
+
         }
 
         if self.file_path.lower().endswith('.pdf'):
