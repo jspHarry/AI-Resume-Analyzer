@@ -37,7 +37,10 @@ def fetch_yt_video(link):
         return None
 
 
-
+class MyResumeParser:
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.custom_nlp = spacy.load("en_core_web_sm")
 
 def get_table_download_link(df, filename, text):
     """Generates a link allowing the data in a given panda dataframe to be downloaded
@@ -171,7 +174,7 @@ def run():
             with open(save_image_path, "wb") as f:
                 f.write(pdf_file.getbuffer())
             show_pdf(save_image_path)
-            resume_data = ResumeParser(save_image_path).get_extracted_data()
+            resume_data = MyResumeParser(save_image_path).get_extracted_data()
             if resume_data:
                 ## Get the whole resume data
                 resume_text = pdf_reader(save_image_path)
