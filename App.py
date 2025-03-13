@@ -29,6 +29,15 @@ from IPython.display import HTML
 from data_insertion import insert_user_data_mongo
 from pymongo import MongoClient
 import PyPDF2
+from mongodb_connect import get_mongo_connection
+db = get_mongo_connection()
+
+if db:
+    collection = db['user_data']  # Example collection
+    # Proceed with inserting/fetching data
+else:
+    print("Database connection not established. Check logs for errors.")
+
 
 def fetch_yt_video(link):
     # video = pafy.new(link)
@@ -475,6 +484,8 @@ def run():
     cand_level,
     recommended_skills,
     rec_course
+     
+    
 )
 
                 # ## Resume writing video
@@ -497,7 +508,7 @@ def run():
                 # st.markdown(f'<iframe width="560" height="315" src="{interview_vid}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>', unsafe_allow_html=True)
 
 
-                connection.commit()
+                # connection.commit()
             else:
                 st.error('Something went wrong..')
     else:
