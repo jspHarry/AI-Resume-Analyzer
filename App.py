@@ -3,7 +3,7 @@ import nltk
 import spacy
 nltk.download('stopwords')
 spacy.load('en_core_web_sm')
-
+from pyresparser import ResumeParser
 import pandas as pd
 import base64, random
 import time, datetime
@@ -42,10 +42,10 @@ class MyResumeParser:
         self.file_path = file_path
         self.custom_nlp = spacy.load("en_core_web_sm")
 
-         def get_extracted_data(self):
-        # You may customize this method if needed
-        data = ResumeParser(self.file_path).get_extracted_data()
-        return data
+    def get_extracted_data(self):
+        return ResumeParser(self.file_path).get_extracted_data()
+
+        
 
 def get_table_download_link(df, filename, text):
     """Generates a link allowing the data in a given panda dataframe to be downloaded
@@ -180,6 +180,7 @@ def run():
                 f.write(pdf_file.getbuffer())
             show_pdf(save_image_path)
             resume_data = MyResumeParser(save_image_path).get_extracted_data()
+            #print(resume_data)
             if resume_data:
                 ## Get the whole resume data
                 resume_text = pdf_reader(save_image_path)
