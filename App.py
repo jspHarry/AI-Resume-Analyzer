@@ -1,9 +1,13 @@
 import streamlit as st
 import nltk
+import os
 import spacy
 nltk.download('stopwords')
 spacy.load('en_core_web_sm')
 from pyresparser import ResumeParser
+import re
+from pdfminer.high_level import extract_text
+from docx import Document
 import pandas as pd
 import base64, random
 import time, datetime
@@ -24,6 +28,7 @@ import youtube_dl
 from IPython.display import HTML
 from data_insertion import insert_user_data_mongo
 from pymongo import MongoClient
+import PyPDF2
 
 def fetch_yt_video(link):
     # video = pafy.new(link)
@@ -42,8 +47,55 @@ class MyResumeParser:
         self.file_path = file_path
         self.custom_nlp = spacy.load("en_core_web_sm")
 
+    def extract_text(self):
+        if self.file_path.lower().endswith('.pdf'):
+            return extract_text(self.file_path)
+        elif self.file_path.lower().endswith('.docx'):
+            doc = Document(self.file_path)
+            return '\n'.join([para.text for para in doc.paragraphs])
+        else:
+            try:
+                with open(self.file_path, 'r', encoding='utf-8') as f:
+                    return f.read()
+            except UnicodeDecodeError:
+                with open(self.file_path, 'r', encoding='latin-1') as f:
+                    return f.read()
+
+    def extract_email(self, text):
+        email = re.findall(r"[a-zA-Z0-9\.\-+_]+@[a-zA-Z0-9\.\-+_]+\.[a-zA-Z]+", text)
+        return email[0] if email else None
+
+    def extract_phone(self, text):
+        phone = re.findall(r'\+?\d[\d -]{8,12}\d', text)
+        return phone[0] if phone else None
+
+    def get_pdf_page_count(self):
+        with open(self.file_path, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+            return len(reader.pages)
+
     def get_extracted_data(self):
-        return ResumeParser(self.file_path).get_extracted_data()
+        text = self.extract_text()
+        doc = self.custom_nlp(text)
+        name = None
+        for ent in doc.ents:
+            if ent.label_ == "PERSON":
+                name = ent.text
+                break
+
+        data = {
+            "name": name,
+            "email": self.extract_email(text),
+            "phone": self.extract_phone(text),
+            "raw_text": text
+        }
+
+        if self.file_path.lower().endswith('.pdf'):
+            data["no_of_pages"] = self.get_pdf_page_count()
+        else:
+            data["no_of_pages"] = None  # Or 1
+
+        return data
 
         
 
