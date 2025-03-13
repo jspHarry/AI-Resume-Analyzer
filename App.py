@@ -477,24 +477,24 @@ def run():
     rec_course
 )
 
-                ## Resume writing video
-                st.header("**Bonus Video for Resume Writing Tips💡**")
-                resume_vid = random.choice(resume_videos)
-                res_vid_title = fetch_yt_video(resume_vid)
-                # st.subheader("✅ **" + res_vid_title + "**")
-                # st.video(resume_vid)
-                st.markdown(f'<iframe width="560" height="315" src="{resume_vid}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>',unsafe_allow_html=True)
+                # ## Resume writing video
+                # st.header("**Bonus Video for Resume Writing Tips💡**")
+                # resume_vid = random.choice(resume_videos)
+                # res_vid_title = fetch_yt_video(resume_vid)
+                # # st.subheader("✅ **" + res_vid_title + "**")
+                # # st.video(resume_vid)
+                # st.markdown(f'<iframe width="560" height="315" src="{resume_vid}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>',unsafe_allow_html=True)
 
                 
 
 
-                ## Interview Preparation Video
-                st.header("**Bonus Video for Interview👨‍💼 Tips💡**")
-                interview_vid = random.choice(interview_videos)
-                int_vid_title = fetch_yt_video(interview_vid)
-                # st.subheader("✅ **" + int_vid_title + "**")
-                # st.video(interview_vid)
-                st.markdown(f'<iframe width="560" height="315" src="{interview_vid}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>', unsafe_allow_html=True)
+                # ## Interview Preparation Video
+                # st.header("**Bonus Video for Interview👨‍💼 Tips💡**")
+                # interview_vid = random.choice(interview_videos)
+                # int_vid_title = fetch_yt_video(interview_vid)
+                # # st.subheader("✅ **" + int_vid_title + "**")
+                # # st.video(interview_vid)
+                # st.markdown(f'<iframe width="560" height="315" src="{interview_vid}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>', unsafe_allow_html=True)
 
 
                 connection.commit()
