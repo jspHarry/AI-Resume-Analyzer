@@ -42,6 +42,11 @@ class MyResumeParser:
         self.file_path = file_path
         self.custom_nlp = spacy.load("en_core_web_sm")
 
+         def get_extracted_data(self):
+        # You may customize this method if needed
+        data = ResumeParser(self.file_path).get_extracted_data()
+        return data
+
 def get_table_download_link(df, filename, text):
     """Generates a link allowing the data in a given panda dataframe to be downloaded
     in:  dataframe
