@@ -174,7 +174,7 @@ def course_recommender(course_list):
     return rec_course
 
 
-connection = pymysql.connect(host='sql7.freesqldatabase.com', port=3306 ,user='sql5812679', password='jLBJG6Ulre')
+connection = pymysql.connect(host='sql5.freesqldatabase.com', port=3306 ,user='sql5815882', password='rRhyJqWXh8')
 cursor = connection.cursor()
 
 
