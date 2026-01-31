@@ -507,97 +507,76 @@ def run():
                 # connection.commit()
             else:
                 st.error('Something went wrong..')
-    else:
-## =========================
-## Admin Side (MongoDB Only)
-## =========================
+        else:
+        ## =========================
+        ## Admin Side (MongoDB Only)
+        ## =========================
 
-st.success('Welcome to Admin Side')
+        st.success('Welcome to Admin Side')
 
-ad_user = st.text_input("Username")
-ad_password = st.text_input("Password", type='password')
+        ad_user = st.text_input("Username")
+        ad_password = st.text_input("Password", type='password')
 
-if st.button('Login'):
+        if st.button('Login'):
 
-    if ad_user == 'Atingle' and ad_password == 'atingle123':
+            if ad_user == 'Atingle' and ad_password == 'atingle123':
 
-        st.success("Welcome Boss 👑")
+                st.success("Welcome Boss 👑")
 
-        # -----------------------
-        # MongoDB Connection
-        # -----------------------
-        db = get_mongo_connection()
-        collection = db['user_data']
+                db = get_mongo_connection()
+                collection = db['user_data']
 
-        # -----------------------
-        # Fetch all users
-        # -----------------------
-        data = list(collection.find({}, {"_id": 0}))  # hide Mongo _id
+                data = list(collection.find({}, {"_id": 0}))
 
-        if len(data) == 0:
-            st.warning("No data found in database")
-            return
+                if not data:
+                    st.warning("No data found in database")
+                    return
 
-        df = pd.DataFrame(data)
+                df = pd.DataFrame(data)
 
-        st.header("**User's Data 👨‍💻**")
-        st.dataframe(df)
+                st.header("User Data")
+                st.dataframe(df)
 
-        st.markdown(
-            get_table_download_link(df, 'User_Data.csv', 'Download Report'),
-            unsafe_allow_html=True
-        )
+                st.markdown(
+                    get_table_download_link(df, 'User_Data.csv', 'Download Report'),
+                    unsafe_allow_html=True
+                )
 
-        # -----------------------
-        # Pie Chart: Predicted Field
-        # -----------------------
-        st.subheader("📈 Pie-Chart for Predicted Field Recommendations")
+                # ---------- Pie: Field ----------
+                st.subheader("📈 Predicted Field Distribution")
 
-        pipeline = [
-            {"$group": {"_id": "$reco_field", "count": {"$sum": 1}}}
-        ]
+                pipeline = [
+                    {"$group": {"_id": "$reco_field", "count": {"$sum": 1}}}
+                ]
 
-        result = list(collection.aggregate(pipeline))
+                result = list(collection.aggregate(pipeline))
 
-        if result:
-            plot_data = pd.DataFrame(result)
-            plot_data.rename(columns={"_id": "Predicted_Field"}, inplace=True)
+                if result:
+                    plot_data = pd.DataFrame(result)
+                    plot_data.rename(columns={"_id": "Predicted_Field"}, inplace=True)
 
-            fig = px.pie(
-                plot_data,
-                values="count",
-                names="Predicted_Field",
-                title="Predicted Field according to Skills"
-            )
+                    fig = px.pie(plot_data, values="count", names="Predicted_Field")
+                    st.plotly_chart(fig)
 
-            st.plotly_chart(fig)
+                # ---------- Pie: Level ----------
+                st.subheader("📈 Experience Level Distribution")
 
-        # -----------------------
-        # Pie Chart: User Level
-        # -----------------------
-        st.subheader("📈 Pie-Chart for User Experience Level")
+                pipeline = [
+                    {"$group": {"_id": "$cand_level", "count": {"$sum": 1}}}
+                ]
 
-        pipeline = [
-            {"$group": {"_id": "$cand_level", "count": {"$sum": 1}}}
-        ]
+                result = list(collection.aggregate(pipeline))
 
-        result = list(collection.aggregate(pipeline))
+                if result:
+                    plot_data = pd.DataFrame(result)
+                    plot_data.rename(columns={"_id": "User_level"}, inplace=True)
 
-        if result:
-            plot_data = pd.DataFrame(result)
-            plot_data.rename(columns={"_id": "User_level"}, inplace=True)
+                    fig = px.pie(plot_data, values="count", names="User_level")
+                    st.plotly_chart(fig)
 
-            fig = px.pie(
-                plot_data,
-                values="count",
-                names="User_level",
-                title="User Experience Distribution"
-            )
+            else:
+                st.error("Wrong ID & Password Provided")
 
-            st.plotly_chart(fig)
-
-    else:
-        st.error("Wrong ID & Password Provided")
 
 
 run()
