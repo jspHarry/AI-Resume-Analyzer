@@ -508,47 +508,96 @@ def run():
             else:
                 st.error('Something went wrong..')
     else:
-        ## Admin Side
-        st.success('Welcome to Admin Side')
-        # st.sidebar.subheader('**ID / Password Required!**')
+## =========================
+## Admin Side (MongoDB Only)
+## =========================
 
-        ad_user = st.text_input("Username")
-        ad_password = st.text_input("Password", type='password')
-        if st.button('Login'):
-            if ad_user == 'Atingle' and ad_password == 'atingle123':
-                st.success("Welcome Boss")
-                # Display Data
-                cursor.execute('''SELECT * FROM user_data''')
-                data = cursor.fetchall()
-                st.header("**User's👨‍💻 Data**")
-                df = pd.DataFrame(data, columns=['ID', 'Name', 'Email', 'Resume Score', 'Timestamp', 'Total Page',
-                                          'Predicted Field', 'User Level', 'Actual Skills', 'Recommended Skills',
-                                          'Recommended Course'])
-                st.dataframe(df)
-                st.markdown(get_table_download_link(df, 'User_Data.csv', 'Download Report'), unsafe_allow_html=True)
-        
-                ## Admin Side Data
-                query = 'SELECT Predicted_Field, COUNT(*) AS count FROM user_data GROUP BY Predicted_Field;'
-                plot_data = pd.read_sql(query, connection)
+st.success('Welcome to Admin Side')
 
-                ## Pie chart for predicted field recommendations
-                labels = plot_data['Predicted_Field']
-                values = plot_data['count']
-                st.subheader("📈 **Pie-Chart for Predicted Field Recommendations**")
-                fig = px.pie(plot_data, values=values, names=labels, title='Predicted Field according to the Skills')
-                st.plotly_chart(fig)
+ad_user = st.text_input("Username")
+ad_password = st.text_input("Password", type='password')
 
-                ### Pie chart for User's👨‍💻 Experienced Level
-                query = 'SELECT User_level, COUNT(*) AS count FROM user_data GROUP BY User_level;'
-                plot_data = pd.read_sql(query, connection)
+if st.button('Login'):
 
-                labels = plot_data['User_level']
-                values = plot_data['count']
-                st.subheader("📈 ** Pie-Chart for User's👨‍💻 Experienced Level**")
-                fig = px.pie(plot_data, values=values, names=labels, title="Pie-Chart📈 for User's👨‍💻 Experienced Level")
-                st.plotly_chart(fig)
+    if ad_user == 'Atingle' and ad_password == 'atingle123':
 
-            else:
-                st.error("Wrong ID & Password Provided")
+        st.success("Welcome Boss 👑")
+
+        # -----------------------
+        # MongoDB Connection
+        # -----------------------
+        db = get_mongo_connection()
+        collection = db['user_data']
+
+        # -----------------------
+        # Fetch all users
+        # -----------------------
+        data = list(collection.find({}, {"_id": 0}))  # hide Mongo _id
+
+        if len(data) == 0:
+            st.warning("No data found in database")
+            return
+
+        df = pd.DataFrame(data)
+
+        st.header("**User's Data 👨‍💻**")
+        st.dataframe(df)
+
+        st.markdown(
+            get_table_download_link(df, 'User_Data.csv', 'Download Report'),
+            unsafe_allow_html=True
+        )
+
+        # -----------------------
+        # Pie Chart: Predicted Field
+        # -----------------------
+        st.subheader("📈 Pie-Chart for Predicted Field Recommendations")
+
+        pipeline = [
+            {"$group": {"_id": "$reco_field", "count": {"$sum": 1}}}
+        ]
+
+        result = list(collection.aggregate(pipeline))
+
+        if result:
+            plot_data = pd.DataFrame(result)
+            plot_data.rename(columns={"_id": "Predicted_Field"}, inplace=True)
+
+            fig = px.pie(
+                plot_data,
+                values="count",
+                names="Predicted_Field",
+                title="Predicted Field according to Skills"
+            )
+
+            st.plotly_chart(fig)
+
+        # -----------------------
+        # Pie Chart: User Level
+        # -----------------------
+        st.subheader("📈 Pie-Chart for User Experience Level")
+
+        pipeline = [
+            {"$group": {"_id": "$cand_level", "count": {"$sum": 1}}}
+        ]
+
+        result = list(collection.aggregate(pipeline))
+
+        if result:
+            plot_data = pd.DataFrame(result)
+            plot_data.rename(columns={"_id": "User_level"}, inplace=True)
+
+            fig = px.pie(
+                plot_data,
+                values="count",
+                names="User_level",
+                title="User Experience Distribution"
+            )
+
+            st.plotly_chart(fig)
+
+    else:
+        st.error("Wrong ID & Password Provided")
+
 
 run()
