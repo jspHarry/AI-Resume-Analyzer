@@ -30,13 +30,9 @@ from data_insertion import insert_user_data_mongo
 from pymongo import MongoClient
 import PyPDF2
 from mongodb_connect import get_mongo_connection
-db = get_mongo_connection()
+# db = get_mongo_connection()
 
-if db:
-    collection = db['user_data']  # Example collection
-    # Proceed with inserting/fetching data
-else:
-    print("Database connection not established. Check logs for errors.")
+# collection = db['user_data']
 
 
 def fetch_yt_video(link):
