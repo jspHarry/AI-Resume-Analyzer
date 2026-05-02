@@ -20,7 +20,7 @@ from pdfminer3.converter import TextConverter
 import io, random
 from streamlit_tags import st_tags
 from PIL import Image
-import pymysql
+
 from Courses import ds_course, web_course, android_course, ios_course, uiux_course, resume_videos, interview_videos
 import pafy
 import plotly.express as px
@@ -170,30 +170,30 @@ def course_recommender(course_list):
     return rec_course
 
 
-connection = pymysql.connect(host='sql5.freesqldatabase.com', port=3306 ,user='sql5825091', password='rL5etc4UPZ')
-cursor = connection.cursor()
+# connection = pymysql.connect(host='sql5.freesqldatabase.com', port=3306 ,user='sql5825091', password='rL5etc4UPZ')
+# cursor = connection.cursor()
 
 
-def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand_level, skills, recommended_skills,
-                courses):
-    DB_table_name = 'user_data'
-    insert_sql = "insert into " + DB_table_name + """
-    values (0,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-    rec_values = (
-    name, email, str(res_score), timestamp, str(no_of_pages), reco_field, cand_level, skills, recommended_skills,
-    courses)
+# def insert_data(name, email, res_score, timestamp, no_of_pages, reco_field, cand_level, skills, recommended_skills,
+#               courses):
+#    DB_table_name = 'user_data'
+#    insert_sql = "insert into " + DB_table_name + """
+#    values (0,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+#    rec_values = (
+#    name, email, str(res_score), timestamp, str(no_of_pages), reco_field, cand_level, skills, recommended_skills,
+#    courses)
     # cursor.execute(insert_sql, rec_values)
     # connection.commit()
 
-    if email is None:
-        email = "N/A"
+#    if email is None:
+#        email = "N/A"
     
-    try:
-        cursor.execute(insert_sql, rec_values)
-        connection.commit()
-    except pymysql.err.IntegrityError as e:
-        print("Integrity Error:", e)
-        connection.rollback()
+#    try:
+#        cursor.execute(insert_sql, rec_values)
+#        connection.commit()
+#    except pymysql.err.IntegrityError as e:
+#        print("Integrity Error:", e)
+#        connection.rollback()
 
 
 
