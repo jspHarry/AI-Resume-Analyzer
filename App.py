@@ -59,25 +59,42 @@ class MyResumeParser:
     def extract_name(self, text):
         lines = text.split('\n')
 
-        for line in lines[:10]:   # only first 10 lines
+        job_title_words = [
+            "engineer", "developer", "analyst", "scientist",
+            "intern", "student", "manager", "designer",
+            "specialist", "consultant"
+        ]
+
+        for line in lines[:10]:
             line = line.strip()
 
             if not line:
                 continue
 
-            # skip lines containing unwanted info
-            if any(keyword in line.lower() for keyword in [
+            line_lower = line.lower()
+
+            # skip unwanted lines
+            if any(keyword in line_lower for keyword in [
                 '@', 'linkedin', 'github', 'phone',
                 'education', 'skills', 'projects',
                 'experience', 'resume'
             ]):
                 continue
 
-            # name usually has 2-4 words and only alphabets
+            # skip job titles
+            if any(word in line_lower for word in job_title_words):
+                continue
+
+            # only alphabets + spaces
             if re.match(r'^[A-Za-z ]{3,40}$', line):
                 words = line.split()
+
+                # most names are 2-4 words
                 if 2 <= len(words) <= 4:
-                    return line
+
+                    # ensure each word starts with capital letter
+                    if all(word[0].isupper() for word in words):
+                        return line
 
         return None
 
