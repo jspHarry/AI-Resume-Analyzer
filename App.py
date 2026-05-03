@@ -609,7 +609,22 @@ def run():
                     plot_data = pd.DataFrame(result)
                     plot_data.rename(columns={"_id": "User_level"}, inplace=True)
 
-                    fig = px.pie(plot_data, values="count", names="User_level")
+                    fig = px.pie(
+                        plot_data,
+                        values="count",
+                        names="User_level",
+                        color_discrete_sequence=[
+                            "#FF6384",   # pink
+                            "#36A2EB",   # blue
+                            "#FFCE56",   # yellow
+                        ]
+                    )
+                    
+                    fig.update_traces(
+                        textinfo='percent+label',
+                        pull=[0.05]*len(plot_data)
+                    )
+                    
                     st.plotly_chart(fig)
 
             else:
