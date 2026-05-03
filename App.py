@@ -299,7 +299,7 @@ def run():
 
                 recommended_skills = []
                 reco_field = ''
-                rec_course = ''
+                rec_course = []
                 ## Courses recommendation
                 for i in resume_data['skills']:
                     ## Data science recommendation
@@ -531,6 +531,44 @@ def run():
                 if not data:
                     st.warning("No data found in database")
                     return
+                # Fix inconsistent MongoDB data
+                for record in data:
+                
+                    # recommended_courses fix
+                    if "recommended_courses" in record:
+                        if isinstance(record["recommended_courses"], list):
+                            record["recommended_courses"] = ", ".join(record["recommended_courses"])
+                        elif record["recommended_courses"] is None:
+                            record["recommended_courses"] = ""
+                        else:
+                            record["recommended_courses"] = str(record["recommended_courses"])
+                
+                    else:
+                        record["recommended_courses"] = ""
+                
+                    
+                    # recommended_skills fix
+                    if "recommended_skills" in record:
+                        if isinstance(record["recommended_skills"], list):
+                            record["recommended_skills"] = ", ".join(record["recommended_skills"])
+                        elif record["recommended_skills"] is None:
+                            record["recommended_skills"] = ""
+                        else:
+                            record["recommended_skills"] = str(record["recommended_skills"])
+                    else:
+                        record["recommended_skills"] = ""
+                
+                
+                    # actual skills fix
+                    if "skills" in record:
+                        if isinstance(record["skills"], list):
+                            record["skills"] = ", ".join(record["skills"])
+                        elif record["skills"] is None:
+                            record["skills"] = ""
+                        else:
+                            record["skills"] = str(record["skills"])
+                    else:
+                        record["skills"] = ""
 
                 df = pd.DataFrame(data)
 
