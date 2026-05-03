@@ -57,29 +57,29 @@ class MyResumeParser:
         self.custom_nlp = spacy.load("en_core_web_sm")
 
     def extract_name(self, text):
-    lines = text.split('\n')
+        lines = text.split('\n')
 
-    for line in lines[:10]:   # only first 10 lines
-        line = line.strip()
+        for line in lines[:10]:   # only first 10 lines
+            line = line.strip()
 
-        if not line:
-            continue
+            if not line:
+                continue
 
-        # skip lines containing unwanted info
-        if any(keyword in line.lower() for keyword in [
-            '@', 'linkedin', 'github', 'phone',
-            'education', 'skills', 'projects',
-            'experience', 'resume'
-        ]):
-            continue
+            # skip lines containing unwanted info
+            if any(keyword in line.lower() for keyword in [
+                '@', 'linkedin', 'github', 'phone',
+                'education', 'skills', 'projects',
+                'experience', 'resume'
+            ]):
+                continue
 
-        # name usually has 2-4 words and only alphabets
-        if re.match(r'^[A-Za-z ]{3,40}$', line):
-            words = line.split()
-            if 2 <= len(words) <= 4:
-                return line
+            # name usually has 2-4 words and only alphabets
+            if re.match(r'^[A-Za-z ]{3,40}$', line):
+                words = line.split()
+                if 2 <= len(words) <= 4:
+                    return line
 
-    return None
+        return None
 
     def extract_text(self):
         if self.file_path.lower().endswith('.pdf'):
