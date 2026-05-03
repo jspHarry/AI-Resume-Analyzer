@@ -119,11 +119,11 @@ class MyResumeParser:
         name = self.extract_name(text)
         # fallback to spaCy only if rule-based extraction fails
         if not name:
-        doc = self.custom_nlp(text)
-        for ent in doc.ents:
-            if ent.label_ == "PERSON":
-                name = ent.text
-                break
+            doc = self.custom_nlp(text)
+            for ent in doc.ents:
+                if ent.label_ == "PERSON":
+                    name = ent.text
+                    break
 
         data = {
             "name": name,
