@@ -56,48 +56,6 @@ class MyResumeParser:
         self.file_path = file_path
         self.custom_nlp = spacy.load("en_core_web_sm")
 
-    def extract_name(self, text):
-        lines = text.split('\n')
-
-        job_title_words = [
-            "engineer", "developer", "analyst", "scientist",
-            "intern", "student", "manager", "designer",
-            "specialist", "consultant"
-        ]
-
-        for line in lines[:10]:
-            line = line.strip()
-
-            if not line:
-                continue
-
-            line_lower = line.lower()
-
-            # skip unwanted lines
-            if any(keyword in line_lower for keyword in [
-                '@', 'linkedin', 'github', 'phone',
-                'education', 'skills', 'projects',
-                'experience', 'resume'
-            ]):
-                continue
-
-            # skip job titles
-            if any(word in line_lower for word in job_title_words):
-                continue
-
-            # only alphabets + spaces
-            if re.match(r'^[A-Za-z ]{3,40}$', line):
-                words = line.split()
-
-                # most names are 2-4 words
-                if 2 <= len(words) <= 4:
-
-                    # ensure each word starts with capital letter
-                    if all(word[0].isupper() for word in words):
-                        return line
-
-        return None
-
     def extract_text(self):
         if self.file_path.lower().endswith('.pdf'):
             return extract_text(self.file_path)
@@ -133,25 +91,12 @@ class MyResumeParser:
 
     def get_extracted_data(self):
         text = self.extract_text()
+        doc = self.custom_nlp(text)
         name = None
-
-        # First try pyresparser
-        try:
-            parsed_data = ResumeParser(self.file_path).get_extracted_data()
-            name = parsed_data.get("name")
-        except Exception as e:
-            print("Pyresparser failed:", e)
-
-            # fallback to custom extraction
-        if not name:
-            name = self.extract_name(text)
-        # fallback to spaCy only if rule-based extraction fails
-        if not name:
-            doc = self.custom_nlp(text)
-            for ent in doc.ents:
-                if ent.label_ == "PERSON":
-                    name = ent.text
-                    break
+        for ent in doc.ents:
+            if ent.label_ == "PERSON":
+                name = ent.text
+                break
 
         data = {
             "name": name,
@@ -315,7 +260,7 @@ def run():
                 try:
                     st.text('Name: ' + resume_data['name'])
                     st.text('Email: ' + resume_data['email'])
-                    st.text('Contact: ' + resume_data['phone'])
+                    st.text('Contact: ' + resume_data['mobile_number'])
                     st.text('Resume pages: ' + str(resume_data['no_of_pages']))
                 except:
                     pass
