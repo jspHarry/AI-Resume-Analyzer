@@ -114,10 +114,12 @@ class MyResumeParser:
         return [skill for skill in SKILLS_DB if skill in text]
 
 
-    def get_extracted_data(self):
+     def get_extracted_data(self):
         text = self.extract_text()
-        doc = self.custom_nlp(text)
         name = self.extract_name(text)
+        # fallback to spaCy only if rule-based extraction fails
+        if not name:
+        doc = self.custom_nlp(text)
         for ent in doc.ents:
             if ent.label_ == "PERSON":
                 name = ent.text
@@ -285,7 +287,7 @@ def run():
                 try:
                     st.text('Name: ' + resume_data['name'])
                     st.text('Email: ' + resume_data['email'])
-                    st.text('Contact: ' + resume_data['mobile_number'])
+                    st.text('Contact: ' + resume_data['phone'])
                     st.text('Resume pages: ' + str(resume_data['no_of_pages']))
                 except:
                     pass
