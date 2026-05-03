@@ -114,7 +114,7 @@ class MyResumeParser:
         return [skill for skill in SKILLS_DB if skill in text]
 
 
-     def get_extracted_data(self):
+    def get_extracted_data(self):
         text = self.extract_text()
         name = self.extract_name(text)
         # fallback to spaCy only if rule-based extraction fails
