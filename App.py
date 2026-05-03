@@ -133,7 +133,18 @@ class MyResumeParser:
 
     def get_extracted_data(self):
         text = self.extract_text()
-        name = self.extract_name(text)
+        name = None
+
+        # First try pyresparser
+        try:
+            parsed_data = ResumeParser(self.file_path).get_extracted_data()
+            name = parsed_data.get("name")
+        except Exception as e:
+            print("Pyresparser failed:", e)
+
+            # fallback to custom extraction
+        if not name:
+            name = self.extract_name(text)
         # fallback to spaCy only if rule-based extraction fails
         if not name:
             doc = self.custom_nlp(text)
